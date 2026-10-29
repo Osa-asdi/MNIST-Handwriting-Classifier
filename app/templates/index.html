@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+        <div class="hero-badge">
+            <span class="pulse-dot"></span>
+            Production Model Online &bull; {{ model_info.name }}
+        </div>
+        <h1 class="hero-title">Handwritten Digit Recognition</h1>
+        <p class="hero-subtitle">
+            Interact with our high-accuracy machine learning model. Draw on the digital canvas, upload a digit photo, or benchmark against real MNIST test presets.
+        </p>
+    </section>
+
+    <!-- Main Workspace Grid -->
+    <div class="workspace-grid">
+        
+        <!-- LEFT PANEL: Input Workshop -->
+        <div class="card panel-input">
+            <!-- Tabs Header -->
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="tab-canvas" id="tabBtnCanvas">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                    </svg>
+                    <span>Draw Canvas</span>
+                </button>
+                <button class="tab-btn" data-tab="tab-upload" id="tabBtnUpload">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Upload Image</span>
+                </button>
+                <button class="tab-btn" data-tab="tab-presets" id="tabBtnPresets">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Sample Digits</span>
+                </button>
+                <button class="tab-btn" data-tab="tab-url" id="tabBtnUrl">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <span>Image URL</span>
+                </button>
+            </div>
+
+            <!-- Tab Content 1: Draw Canvas -->
+            <div class="tab-pane active" id="tab-canvas">
+                <div class="canvas-wrapper">
+                    <div class="canvas-container">
+                        <canvas id="drawingCanvas" width="280" height="280"></canvas>
+                        <div class="canvas-grid-overlay"></div>
+                        <span class="canvas-hint" id="canvasHint">Draw a single digit here (0 - 9)</span>
+                    </div>
+
+                    <!-- Canvas Controls -->
+                    <div class="canvas-toolbar">
+                        <div class="brush-control">
+                            <label for="brushSize">Brush: <span id="brushSizeVal">24px</span></label>
+                            <input type="range" id="brushSize" min="12" max="38" value="24" class="slider">
+                        </div>
+                        <div class="toolbar-actions">
+                            <button type="button" class="btn btn-secondary" id="clearCanvasBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                <span>Clear</span>
+                            </button>
+                            <button type="button" class="btn btn-primary" id="predictCanvasBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                <span>Predict Digit</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Auto-predict Switch -->
+                    <div class="realtime-toggle">
+                        <label class="switch">
+                            <input type="checkbox" id="realtimeToggle" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                        <span class="switch-label">Live Auto-Prediction (predict as you draw)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content 2: File Upload -->
+            <div class="tab-pane" id="tab-upload">
+                <div class="upload-wrapper">
+                    <div class="dropzone" id="dropzone">
+                        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" class="file-input-hidden">
+                        <div class="dropzone-content" id="dropzoneContent">
+                            <div class="dropzone-icon">
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <p class="dropzone-title">Drag & drop your digit image here</p>
+                            <p class="dropzone-subtitle">or <span class="browse-link">browse from your computer</span></p>
+                            <span class="dropzone-badge">PNG, JPG, WEBP (grayscale or color)</span>
+                        </div>
+                        <div class="upload-preview-container" id="uploadPreviewContainer" style="display: none;">
+                            <img id="uploadPreviewImg" alt="Uploaded Preview" class="upload-preview-img">
+                            <button type="button" class="btn-remove-upload" id="removeUploadBtn">&times;</button>
+                        </div>
+                    </div>
+
+                    <div class="upload-actions">
+                        <button type="button" class="btn btn-primary btn-block" id="predictUploadBtn" disabled>
+                            <span>Classify Uploaded Image</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content 3: Presets -->
+            <div class="tab-pane" id="tab-presets">
+                <div class="presets-wrapper">
+                    <p class="presets-intro">Click any sample digit below to load its vector representation and immediately run inference:</p>
+                    <div class="presets-grid" id="presetsGrid">
+                        <!-- Populated dynamically by main.js with 10 sample digits -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content 4: Image URL -->
+            <div class="tab-pane" id="tab-url">
+                <div class="url-input-wrapper">
+                    <div class="url-input-group">
+                        <label for="imageUrlInput" class="input-label">Image Web Address (URL):</label>
+                        <div class="url-field-container">
+                            <input type="url" id="imageUrlInput" placeholder="https://example.com/digit.png" class="text-input" spellcheck="false">
+                            <button type="button" class="btn btn-primary" id="fetchUrlBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <polyline points="1 20 1 14 7 14"></polyline>
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                                </svg>
+                                <span>Fetch & Predict</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="url-sample-chips">
+                        <span class="chips-label">Try sample URLs:</span>
+                        <div class="chips-list">
+                            <button type="button" class="sample-url-chip" data-url="https://raw.githubusercontent.com/teavanist/MNIST-JPG/master/MNIST%20-%20JPG%20-%20training/8/10.jpg">Sample 8</button>
+                            <button type="button" class="sample-url-chip" data-url="https://raw.githubusercontent.com/teavanist/MNIST-JPG/master/MNIST%20-%20JPG%20-%20training/3/12.jpg">Sample 3</button>
+                            <button type="button" class="sample-url-chip" data-url="https://raw.githubusercontent.com/teavanist/MNIST-JPG/master/MNIST%20-%20JPG%20-%20training/5/11.jpg">Sample 5</button>
+                            <button type="button" class="sample-url-chip" data-url="https://raw.githubusercontent.com/teavanist/MNIST-JPG/master/MNIST%20-%20JPG%20-%20training/0/1.jpg">Sample 0</button>
+                        </div>
+                    </div>
+
+                    <div class="url-preview-card" id="urlPreviewCard" style="display: none;">
+                        <span class="preview-label">Fetched Image Preview:</span>
+                        <img id="urlPreviewImg" alt="Fetched from URL" class="url-preview-img">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Prediction Results Dashboard -->
+        <div class="card panel-results">
+            <div class="results-header">
+                <h2 class="panel-title">Inference Results</h2>
+                <div class="latency-badge" id="latencyBadge">
+                    <span class="clock-icon">⚡</span>
+                    <span id="latencyText">Ready</span>
+                </div>
+            </div>
+
+            <!-- Primary Prediction Hero Display -->
+            <div class="prediction-hero-card">
+                <div class="prediction-glow"></div>
+                <div class="prediction-box">
+                    <span class="prediction-label">PREDICTED DIGIT</span>
+                    <div class="prediction-digit" id="predictionDigit">?</div>
+                    <div class="confidence-badge" id="confidenceBadge">
+                        <span id="confidenceText">Draw or select a digit</span>
+                    </div>
+                </div>
+
+                <div class="meta-details">
+                    <div class="meta-item">
+                        <span class="meta-label">Selected Model</span>
+                        <span class="meta-value" id="resModelName">{{ model_info.name }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Test Set Accuracy</span>
+                        <span class="meta-value highlight" id="resModelAcc">{{ model_info.test_accuracy }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Architecture</span>
+                        <span class="meta-value" id="resModelType">{{ model_info.type }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Probability Distribution Breakdown -->
+            <div class="probabilities-section">
+                <div class="probabilities-header">
+                    <h3 class="section-title">Class Probabilities (0 – 9)</h3>
+                    <span class="probabilities-note">Softmax / Multi-Class Confidence</span>
+                </div>
+
+                <div class="probabilities-list" id="probabilitiesList">
+                    {% for digit in range(10) %}
+                    <div class="prob-row" id="probRow-{{ digit }}">
+                        <div class="prob-digit">{{ digit }}</div>
+                        <div class="prob-bar-container">
+                            <div class="prob-bar" id="probBar-{{ digit }}" style="width: 0%;"></div>
+                        </div>
+                        <div class="prob-value" id="probVal-{{ digit }}">0.0%</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Processed 28x28 Preview -->
+            <div class="tensor-preview-section">
+                <div class="tensor-header">
+                    <span>Input Preprocessing Matrix ($28 \times 28$)</span>
+                    <span class="tensor-status">Center-of-Mass Aligned</span>
+                </div>
+                <div class="tensor-canvas-container">
+                    <canvas id="previewCanvas28" width="28" height="28" class="preview-canvas-28"></canvas>
+                    <div class="tensor-info">
+                        <p>Automatically cropped, resized with aspect-ratio preservation, centered into a 28×28 grayscale bounding box, and normalized to range $[0.0, 1.0]$.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- API Documentation Modal -->
+    <div id="apiDocsModal" class="modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>REST API Reference</h3>
+                <a href="#" class="modal-close" id="closeApiDocs">&times;</a>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">This Flask application exposes production-ready REST endpoints for seamless MLOps integration.</p>
+
+                <!-- Endpoint 1 -->
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="http-badge post">POST</span>
+                        <code>/api/predict/canvas</code>
+                    </div>
+                    <p class="endpoint-summary">Predicts digit from a Base64 encoded image string.</p>
+                    <pre class="code-block"><code>curl -X POST http://localhost:5000/api/predict/canvas \
+  -H "Content-Type: application/json" \
+  -d '{"image": "data:image/png;base64,iVBORw0KGgo..."}'</code></pre>
+                </div>
+
+                <!-- Endpoint 2 -->
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="http-badge post">POST</span>
+                        <code>/api/predict/upload</code>
+                    </div>
+                    <p class="endpoint-summary">Uploads a digit image file directly via multipart form data.</p>
+                    <pre class="code-block"><code>curl -X POST http://localhost:5000/api/predict/upload \
+  -F "file=@digit.png"</code></pre>
+                </div>
+
+                <!-- Endpoint 2b: URL -->
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="http-badge post">POST</span>
+                        <code>/api/predict/url</code>
+                    </div>
+                    <p class="endpoint-summary">Fetches and classifies an image directly from an HTTP/HTTPS URL.</p>
+                    <pre class="code-block"><code>curl -X POST http://localhost:5000/api/predict/url \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com/digit.png"}'</code></pre>
+                </div>
+
+                <!-- Endpoint 3 -->
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="http-badge post">POST</span>
+                        <code>/api/predict/features</code>
+                    </div>
+                    <p class="endpoint-summary">Direct 784 normalized pixel vector prediction.</p>
+                    <pre class="code-block"><code>curl -X POST http://localhost:5000/api/predict/features \
+  -H "Content-Type: application/json" \
+  -d '{"features": [0.0, 0.0, 0.52, ... 784 items]}'</code></pre>
+                </div>
+
+                <!-- Endpoint 4 -->
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="http-badge get">GET</span>
+                        <code>/api/health</code>
+                    </div>
+                    <p class="endpoint-summary">Health check for orchestration (Docker / Kubernetes / monitoring).</p>
+                    <pre class="code-block"><code>curl http://localhost:5000/api/health</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MNIST Digit Classifier | MLOps Suite{% endblock %}</title>
+    <meta name="description" content="Production-grade MNIST handwritten digit recognition API and interactive web interface powered by XGBoost.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="app-background">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+                        <path d="M7 10h4"></path>
+                        <path d="M9 7v6"></path>
+                        <path d="M15 7v10"></path>
+                        <path d="M12 17h6"></path>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">MNIST<span class="brand-highlight">Lens</span></span>
+                    <span class="brand-badge">MLOps v1.0</span>
+                </div>
+            </div>
+
+            <div class="nav-controls">
+                <div class="model-badge-wrapper">
+                    <span class="status-indicator"></span>
+                    <span class="model-label">Active Model:</span>
+                    <select id="modelSelector" class="model-select" aria-label="Select Model">
+                        {% for key, m in available_models.items() %}
+                        <option value="{{ key }}" {% if key == model_info.key %}selected{% endif %}>
+                            {{ m.name }} ({{ m.test_accuracy }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="button" class="btn-theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Switch Light/Dark Mode">
+                    <svg class="theme-icon sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="theme-icon moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+
+                <a href="#apiDocsModal" class="btn-api-docs" id="openApiDocs">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                    <span>API Docs</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>MNIST Digit Classifier & API &bull; Built with Flask, XGBoost & MLOps Architecture</p>
+            <div class="footer-meta">
+                <span>Test Accuracy: <strong>97.87%</strong></span>
+                <span class="separator">&bull;</span>
+                <span>Latency: <strong>&lt; 15ms</strong></span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
